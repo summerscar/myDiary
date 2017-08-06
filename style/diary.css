@@ -1,0 +1,284 @@
+html,body,#app{
+    height: 100%;
+}
+header{
+    height: 40px;
+    width: 100%;
+    background-color: #68b3ff;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+    line-height: 40px;
+    z-index: 5;
+    position: fixed;
+    top:0;
+    left: 0;
+    padding: 0 10px;
+    box-sizing: border-box;
+}
+header i{
+    cursor: pointer;
+  
+}
+#main{
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    padding-top: 40px;
+    box-sizing: border-box;
+}
+#main div#left{
+    height: 100%;
+    background-color: #fafafb;
+    position: fixed;
+    left: 0;
+    top:40px;
+    width: 60%;
+    z-index: 5;
+    transition: all 0.5s;
+    box-shadow: 1px 0 10px rgba(0, 0, 0, 0.1);
+}
+ul{
+    padding: 5px 0;
+}
+li{
+    margin: 2px 0;
+    padding: 8px 0;
+    font-size: 0.9rem;
+    color: #475669;
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+}
+li i{
+    float: left;
+    margin: 0 9%;
+}
+li  span{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+li:hover{
+    background-color: rgba(0, 0, 0, 0.10);
+}
+li:active{
+    background-color: rgba(0, 0, 0, 0.08);
+    color: #5cadff;
+}
+li.active{
+    background-color: rgba(0, 0, 0, 0.08);
+    color: #5cadff;
+}
+.slide-fade-enter-active {
+    transition: all .6s ease-out;
+}
+.slide-fade-leave-active {
+    transition: all .6s ease-in;
+}
+.slide-fade-enter, .slide-fade-leave-active {
+    transform: translateX(-100%);
+}
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .6s
+}
+.fade-enter, .fade-leave-to  {
+    opacity: 0
+}
+#main div#right{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+#main div#right div.mask{
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top:0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+#main div#right div.content{
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #EFF2F7;
+}
+#main div#right div.content div.addBtn{
+    width: 45px;
+    height: 45px;
+    background-color: #2EA9DF;
+    border-radius: 50%;
+    display: table;
+    text-align: center;
+    margin-bottom: 20px;
+    opacity: 0.5;
+    cursor: pointer;
+}
+#main div#right div.content div.refBtn{
+    width: 45px;
+    height: 45px;
+    background-color: #8A6BBE;
+    border-radius: 50%;
+    display: table;
+    text-align: center;
+    opacity: 0.5;
+    cursor: pointer;
+}
+#main div#right div.content div.slidBtn{
+    position: fixed;
+    bottom: 20px;
+    right: 7px;
+    z-index: 1;
+}
+#main div#right div.content div.slidBtn i{
+    font-size: 25px;
+    color: white;
+    display: table-cell;
+    vertical-align: middle;
+    font-weight: bold;
+}
+#main div#right div.dialog{
+    width: 70%;
+    background-color: white;
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%,-55%);
+    z-index: 3;
+    border-radius: 5px;
+    text-align: center;
+}
+#main div#right div.dialog div.title{
+    padding: 8px;
+
+}
+#main div#right div.dialog div.title span{
+    font-weight: bold;
+    font-size: 0.95rem;
+}
+#main div#right div.dialog div.dialogContent{
+    padding: 8px;
+}
+#main div#right div.dialog div.dialogContent input.title{
+    width: 70%;
+    margin: 5px 0;
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+
+}
+#main div#right div.dialog div.signContent input{
+    width: 70%;
+    margin: 5px 0;
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+}
+#main div#right div.dialog div.signContent input:focus{
+    box-shadow: 0 0 0 2px rgba(45,140,240,.2);
+}
+#main div#right div.dialog div.signContent input:hover{
+    border-color: #57a3f3;
+}
+#main div#right div.dialog div.dialogContent input.title:hover{
+
+}
+#main div#right div.dialog div.dialogContent input.title:focus{
+    box-shadow: 0 0 0 2px rgba(45,140,240,.2);
+}
+#main div#right div.dialog div.dialogContent textarea{
+    width: 70%;
+    margin: 5px 0;
+    border: 1px solid #dddee1;
+    border-radius: 4px;
+}
+
+#main div#right div.dialog div.dialogContent textarea:hover{
+    border-color: #57a3f3;
+}
+#main div#right div.dialog div.dialogContent textarea:focus{
+    box-shadow: 0 0 0 2px rgba(45,140,240,.2);
+}
+#main div#right div.dialog div.btnRow button.submit{
+    border-radius: 4px;
+    background-color: #2d8cf0;
+    border: 0;
+    color: #fff;
+    padding: 6px 15px;
+    font-size: 12px;
+    transition: color .2s linear,background-color .2s linear,border .2s linear;
+}
+#main div#right div.dialog div.btnRow button.submit:hover{
+    color: #fff;
+    background-color: #57a3f3;
+    border-color: #57a3f3;
+}
+#main div#right div.dialog div.btnRow button.submit:active{
+    color: #2b85e4;
+    background-color: #fff;
+    border-color: #2b85e4;
+}
+#main div#right div.dialog div.btnRow button.reset{
+    border-radius: 4px;
+    color: #495060;
+    background-color: transparent;
+    border:1px solid #dddee1;
+    padding: 6px 15px;
+    font-size: 12px;
+    transition: color .2s linear,background-color .2s linear,border .2s linear;
+}
+#main div#right div.dialog div.btnRow button.reset:hover{
+    color: #2b85e4;
+    border-color: #57a3f3;
+}
+#main div#right div.dialog div.btnRow button.reset:active{
+    color: #2b85e4;
+    border-color: #2b85e4;
+}
+#main div#right div.dialog div.btnRow button{
+    margin: 5px 4% 20px 4%;
+}
+#main div#right div.content div.diaryContent{
+    text-align: center;
+    background-color: #EFF2F7;
+}
+#main div#right div.content div.diaryContent div.diaryItem div.diarycompleted{
+    position: absolute;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%,-45%);
+
+}
+#main div#right div.content div.diaryContent div.diaryItem{
+    display: inline-block;
+    width: 80%;
+    box-sizing: border-box;
+    margin:15px 0 15px;
+    padding: 0 8px;
+    color: white;
+    border-radius: 8px;
+    opacity: 0.8;
+    position: relative;
+}
+#main div#right div.content div.diaryContent div.diaryItemTitle{
+    padding: 5px;
+    font-size: 15px;
+}
+#main div#right div.content div.diaryContent div.diaryItemText{
+    padding: 4px 15px 0;
+    text-align: left;
+    font-size: 14px;
+}
+#main div#right div.content div.diaryContent div.diaryItemBtn{
+    text-align: right;
+}
+#main div#right div.content div.diaryContent div.diaryItemTime{
+    position: absolute;
+    bottom: -16px;
+    right: 8px;
+    font-size: 12px;
+    color: #80848f;
+}
+#main div#right div.content div.diaryContent div.diaryItemBtn i{
+    display: inline-block;
+    margin: 4px 10px 8px;
+}

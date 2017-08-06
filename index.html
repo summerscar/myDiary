@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- UC强制全屏 -->
+    <meta name="full-screen" content="yes">
+    <!-- UC应用模式 -->
+    <meta name="browsermode" content="application">
+    <!-- QQ强制竖屏 -->
+    <meta name="x5-orientation" content="portrait">
+    <!-- QQ强制全屏 -->
+    <meta name="x5-fullscreen" content="true">
+    <!-- QQ应用模式 -->
+    <meta name="x5-page-mode" content="app">
+    <link href="style/init.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="style/iconfont.css">
+    <link rel="stylesheet" type="text/css" href="style/diary.css">
+    <title>Mydiary</title>
+    <style>
+        [v-cloak] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" v-cloak>
+        <header>
+            <div style="float: left;">
+            <i class="iconfont icon-category" style="font-size: 20px;" @click="ifShowLeft=!ifShowLeft"></i>
+            </div>
+            <span>MyDiary</span>
+            <div style="float:right;opacity:0;">
+            <i class="iconfont icon-category" style="font-size: 20px;" @click="ifShowLeft=!ifShowLeft"></i>
+            </div>
+        </header>
+            
+        <div id="main">
+            <transition name="slide-fade">
+                <div id="left" v-if="ifShowLeft">
+                    <ul >
+                        <li v-if="!ifLogin" @click="ifSignIn=true;ifShowLeft=false">
+                            <i class="iconfont icon-account"></i>
+                            <span>登录</span>
+                        </li>
+                        <li v-if="!ifLogin" @click="ifSignUp=true;ifShowLeft=false">
+                            <i class="iconfont icon-account"></i>
+                            <span>注册</span>
+                        </li>
+                        <li v-if="ifLogin">
+                            <i class="iconfont icon-account"></i>
+                            <span>{{id}}</span></li>
+                        <li v-if="ifLogin" @click="signOut">
+                            <i class="iconfont icon-close"></i>
+                            <span>注销</span></li>
+                        <hr style="opacity: 0.2">
+                        <li :class="{active:li[0]}" @click="liTog(0);">
+                            <i class="iconfont icon-all"></i>
+                            <span>全部</span></li>
+                        <li :class="{active:li[1]}" @click="liTog(1)">
+                            <i class="iconfont icon-smile"></i>
+                            <span>日常</span></li>
+                        <li :class="{active:li[2]}" @click="liTog(2)">
+                            <i class="iconfont icon-pin"></i>
+                            <span>顶置</span></li>
+                        <li :class="{active:li[3]}" @click="liTog(3)">
+                            <i class="iconfont icon-remind"></i>
+                            <span>提醒</span></li>
+                        <li :class="{active:li[4]}" @click="liTog(4)">
+                            <i class="iconfont icon-warning"></i>
+                            <span>紧急</span></li>
+                        <hr style="opacity: 0.2">
+                        <li @click="getHitokoto">
+
+                            <p style="font-size: 12px;padding: 0 15px">{{hitokoto.hitokoto}}</p>
+                            <p style="font-size: 12px;text-align: right;padding: 0 15px">---「{{hitokoto.from}}」</p>
+
+                        </li>
+
+                    </ul>
+
+                </div>
+            </transition>
+            <div id="right">
+
+                <!--侧栏背景-->
+                <transition name="fade">
+                    <div class="mask" v-if="ifShowLeft" style="z-index: 4;" @click="ifShowLeft=false"></div>
+                </transition>
+
+
+
+                <!--对话框背景-->
+                <transition name="fade">
+                    <div v-if="ifDialog || ifConfirm || ifSignIn || ifSignUp" class="mask" @click="ifDialogShow" style="z-index: 2;"></div>
+                </transition>
+
+                <transition name="fade">
+                    <!--对话框-->
+                    <div class="dialog" v-if="ifDialog">
+                        <form>
+                        <div class="title">
+                            <div style="float:left;opacity:0">
+                                <i class="iconfont icon-close"></i>
+                            </div>
+                            <span>编辑笔记</span>
+                            <div style="float:right;font-weight: bold;color: #bbbec4">
+                                <i class="iconfont icon-close" @click="ifDialogShow"></i>
+                            </div>
+                        </div>
+                        <div class="dialogContent">
+                            <label style="display: block">标题</label>
+                            <input type="text" placeholder="" class="title" v-model="addTitle">
+
+                            <textarea rows="4" placeholder="输入内容" v-model="addText"></textarea><br>
+                            <div style="font-size: 0.9rem;margin: 10px 0">
+                                <span>顶置:&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                <input type="radio" id="two" name="pined" value='0' v-model="addPined" checked="checked">
+                                <label for="two">否</label>
+                                <input type="radio" id="one" name="pined" value='1' v-model="addPined">
+                                <label for="one">是</label>&nbsp;&nbsp;
+                            </div>
+                            <div style="font-size: 0.9rem;margin: 10px 0">
+                                <input type="radio" id="typeone" name="type" value="1" v-model="addType" checked="checked">
+                                <label for="typeone">日常</label>
+                                <input type="radio" id="typetwo" name="type" value="2" v-model="addType">
+                                <label for="typetwo">提醒</label>
+                                <input type="radio" id="typethree" name="type" value="3" v-model="addType">
+                                <label for="typethree">紧急</label>
+                            </div>
+                        </div>
+                        <div class="btnRow">
+                            <button type="button" class="submit" @click="addDiary">提交</button>
+                            <button type="button" class="reset" @click="diaryDataInit">重置</button>
+                        </div>
+                        </form>
+                    </div>
+                </transition>
+
+                <transition name="fade">
+                    <div class="dialog" v-if="ifConfirm">
+                            <div class="title">
+                                <div style="float:left;opacity:0">
+                                    <i class="iconfont icon-close"></i>
+                                </div>
+                                <span>确认</span>
+                                <div style="float:right;font-weight: bold;color: #bbbec4">
+                                    <i class="iconfont icon-close" @click="ifConfirm=false"></i>
+                                </div>
+                            </div>
+                            <p style="padding: 20px">确认删除？</p>
+                            <div class="btnRow">
+                                <button type="button" class="submit" @click="delDiary(tempID)">是</button>
+                                <button type="button" class="reset" @click="ifConfirm=false">否</button>
+                            </div>
+                    </div>
+                </transition>
+
+                <transition name="fade">
+                    <div class="dialog sign" v-if="ifSignIn">
+                        <div class="title">
+                            <div style="float:left;opacity:0">
+                                <i class="iconfont icon-close"></i>
+                            </div>
+                            <span>登录</span>
+                            <div style="float:right;font-weight: bold;color: #bbbec4">
+                                <i class="iconfont icon-close" @click="ifSignIn=false"></i>
+                            </div>
+                        </div>
+                        <div class="signContent">
+                            <input type="text" placeholder="输入用户名" v-model="id">
+                            <input type="password" placeholder="输入密码" v-model="password">
+                        </div>
+                        <div class="btnRow">
+                            <button type="button" class="submit" @click="signIn">登录</button>
+                            <button type="button" class="reset" @click="ifSignIn=false">取消</button>
+                        </div>
+                    </div>
+                </transition>
+
+                <transition name="fade">
+                    <div class="dialog signUp" v-if="ifSignUp">
+                        <div class="title">
+                            <div style="float:left;opacity:0">
+                                <i class="iconfont icon-close"></i>
+                            </div>
+                            <span>注册</span>
+                            <div style="float:right;font-weight: bold;color: #bbbec4">
+                                <i class="iconfont icon-close" @click="ifSignUp=false"></i>
+                            </div>
+                        </div>
+                        <div class="signContent">
+                            <input type="text" placeholder="输入用户名" v-model="id">
+                            <input type="password" placeholder="输入密码" v-model="password">
+                        </div>
+                        <div class="btnRow">
+                            <button type="button" class="submit" @click="signUp">注册</button>
+                            <button type="button" class="reset" @click="ifSignUp=false">取消</button>
+                        </div>
+                    </div>
+                </transition>
+
+                <div class="content">
+                    <!--主内容部分-->
+                    <div class="diaryContent">
+                        <div class="diaryItem" v-for="(item, index) in diaryData" :class="[diaryType[item.type],{completed:item.completed}]">
+                            <div v-if="item.completed" class="diarycompleted">
+                                <i class="iconfont icon-complete1" style="font-size: 85px;opacity: 0.9" @click="completeDiary(item._id,item.completed)"></i>
+                            </div>
+                            <div class="diaryItemTitle"><span style="font-weight: bold">{{item.title}}</span> <i class="iconfont icon-pin" v-if="item.top==='1'" style="position: absolute;right: 14px"></i></div>
+                            <div class="diaryItemText">{{item.content}}</div>
+                            <div class="diaryItemBtn">
+                                <i class="iconfont icon-complete" @click="completeDiary(item._id,item.completed)"></i>
+                                <i class="iconfont icon-edit" @click="editDiary(item)"></i>
+                                <i class="iconfont icon-delete" @click="ifDelDiary(item._id)"></i>
+                            </div>
+                            <div class="diaryItemTime">{{item.time}}</div>
+                        </div>
+                        <p v-if="!ifLogin&&!diaryData.length" style="padding: 20px">请先 <a @click="ifSignIn=true" style="font-weight: bold;color: #66ccff;">登录</a>
+                            / <a @click="ifSignUp=true" style="font-weight: bold;color: #66ccff;">注册</a></p>
+                        <p v-else-if="!diaryData.length" style="padding: 20px">暂无数据</p>
+
+                    </div>
+
+
+
+                    <!--悬浮按钮-->
+                    <div class="slidBtn">
+                        <div class="addBtn">
+                            <i class="iconfont icon-add" @click="ifDialog=!ifDialog"></i>
+                        </div>
+                        <div class="refBtn">
+                            <i class="iconfont icon-refresh" @click="getJsonp"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+
+
+
+    <script src="http://cdn.bootcss.com/vue/2.4.1/vue.min.js"></script>
+    <script src="https://cdn.bootcss.com/vue-resource/1.3.4/vue-resource.min.js"></script>
+    <script>
+        var vm=new Vue({
+            el: '#app',
+            data:{
+                url:'120.25.155.70',
+                msg:"hello",
+                ifShowLeft:false,
+                ifLogin:false,
+                ifDialog:false,
+                ifConfirm: false,
+                id: "",
+                password:'',
+                li:[
+                    true,
+                    false,
+                    false,
+                    false,
+                    false,
+                 ]
+                    ,
+                diary_id:'',
+                addTitle:'',
+                addText:'',
+                addType:'1',
+                addPined:'0',
+                addCompleted:false,
+                diaryAllData:[],
+                diaryData:[],
+                diaryType:['default','daily','warning','danger'],
+                tempID: '',
+                hitokoto:{},
+                ifSignIn:false,
+                ifSignUp:false
+            },
+            computed:{
+                addDiaryData:function () {
+
+                    return  {
+                                id:this.id,
+                                type:this.addType,
+                                top:this.addPined,
+                                title:this.addTitle,
+                                content:this.addText,
+                                completed:this.addCompleted
+                            }
+
+                }  
+            },
+            methods:{
+                ifDialogShow:function () {
+                   this.ifDialog=false;
+                   this.diaryDataInit();
+                   this.ifConfirm= false;
+                   this.ifSignIn = false;
+                   this.ifSignUp = false;
+                },
+                liTog:function (linum) {
+                    for(var i=0;i<this.li.length;i++){
+                        this.li[i]=false;
+                    }
+                    this.li.splice(linum,1,true);
+                    this.getDiaryData();
+                    setTimeout(function () {
+                        this.ifShowLeft=false;
+                    }.bind(this),80)
+
+                },
+                getDiaryData:function () {
+                    this.diaryData=[];
+                    var temp='';
+                    for(var i=0;i<this.li.length;i++){
+                        if(this.li[i]===true){
+                            temp=i
+                        }
+                    }
+                    //console.log(temp)
+                    switch (temp){
+                        case 0:
+                            for(var i=0;i<this.diaryAllData.length;i++){
+                                this.diaryData.push(this.diaryAllData[i]);
+                            }
+                           for(var j=0;j<this.diaryData.length;j++){
+
+                               if(this.diaryData[j].top==='1'){
+                                    console.log(j);
+                                    var temp=this.diaryData[j];
+                                    this.diaryData.splice(j,1);
+                                    this.diaryData.unshift(temp);
+                                }
+
+                            }
+                            break;
+                        case 1:
+                            for(var i=0;i<this.diaryAllData.length;i++){
+                                if(this.diaryAllData[i].type==='1'){
+                                this.diaryData.push(this.diaryAllData[i]);
+                                }
+                            }
+                            break;
+                        case 2:
+                            for(var i=0;i<this.diaryAllData.length;i++){
+                                if(this.diaryAllData[i].top==='1'){
+                                    this.diaryData.push(this.diaryAllData[i]);
+                                }
+                            }
+                            break;
+                        case 3:
+                            for(var i=0;i<this.diaryAllData.length;i++){
+                                if(this.diaryAllData[i].type==='2'){
+                                    this.diaryData.push(this.diaryAllData[i]);
+                                }
+                            }
+                            break;
+                        case 4:
+                            for(var i=0;i<this.diaryAllData.length;i++){
+                                if(this.diaryAllData[i].type==='3'){
+                                    this.diaryData.push(this.diaryAllData[i]);
+                                }
+                            }
+                            break;
+                        default:
+                    }
+                },
+                showAdd:function () {
+                    console.log(this.addTitle+" "+this.addText+" "+this.addType+" "+this.addPined)
+                },
+                getJsonp:function() {
+                    if(this.id===''){return}
+                    this.$http.get("http://"+this.url+":3000/json?"+"id="+this.id)
+                        .then(function(response)  {
+                            // success callback
+                            this.diaryAllData=response.data.reverse();
+                            this.getDiaryData();
+                        }).catch(function(response){
+                            // error callback
+                            console.log(response.body);
+                        })
+                },
+                diaryDataInit:function () {
+                        this.addType='1';
+                        this.addPined='0';
+                        this.addTitle='';
+                        this.addText='';
+                        this.addCompleted=false ;
+                        this.diary_id='';
+                },
+                ifDelDiary: function (id) {
+                    this.tempID = id;
+                    this.ifConfirm = true
+                },
+                delDiary:function (id) {
+                    this.$http.post("http://"+this.url+":3000/delDiary",
+                        {_id:id,id:this.id},
+                        {emulateJSON: true}
+                    )
+                        .then(function(res) {
+                            console.log(res.bodyText);
+                            this.getJsonp();
+                            this.tempID = '';
+                            this.ifConfirm = false;
+                        })
+                        .catch(function(res){
+                            console.log(res);
+                            alert("出错了")
+                        });
+                },
+                completeDiary:function (id,bol) {
+                    console.log(bol);
+                    var data={completed:!bol};
+                    data=JSON.stringify(data);
+                    this.$http.post("http://"+this.url+":3000/completedDiary",
+                        {_id:id,data:data,id:this.id},
+                        {emulateJSON: true}
+                    )
+                        .then(function(res) {
+                            console.log(res.bodyText);
+                            this.getJsonp();
+                        })
+                        .catch(function(res){
+                            console.log(res);
+                            alert("出错了")
+                        });
+                },
+                addDiary:function () {
+                    if(this.id===''){return}
+                    if(this.diary_id!==''){
+                        console.log('编辑笔记'+this.diary_id);
+                        var obj=JSON.stringify(this.addDiaryData);
+                        this.$http.post("http://"+this.url+":3000/editDiary",
+                            {data:obj,_id:this.diary_id},
+                            {emulateJSON: true}
+                            )
+                            .then(function(res) {
+                                console.log(res.bodyText);
+                                this.diaryDataInit();
+                                this.ifDialog=false;
+                                this.getJsonp();
+                                this.diary_id='';
+                            })
+                            .catch(function(res){
+                                console.log(res);
+                                alert("出错了")
+                            });
+                    }else {
+                        console.log('添加笔记');
+                        console.log(this.addDiaryData)
+                        var data=JSON.stringify(this.addDiaryData);
+                        this.$http.post("http://"+this.url+":3000/addDiary",
+                            {data:data},
+                        {emulateJSON: true}
+                        )
+                        .then(function(res) {
+                            console.log(res.bodyText);
+                            this.diaryDataInit();
+                            this.ifDialog=false;
+                            this.getJsonp();
+                        })
+                        .catch(function(res){
+                            console.log(res);
+                            alert("出错了")
+                        });
+                    }
+                },
+                editDiary:function (item) {
+                    console.log(item)
+                    this.diary_id=item._id;
+                    this.id=item.id;
+                    this.addType=item.type;
+                    this.addPined=item.top;
+                    this.addTitle=item.title;
+                    this.addText=item.content;
+                    this.addCompleted=item.completed;
+                    console.log('edit');
+                    this.ifDialog=true;
+                 /*   this.$http.post("http://192.168.1.95:3000/editDiary",
+                        this.addDiaryData,
+                        {emulateJSON: true}
+                    )
+                        .then(function(res) {
+                            console.log(res.bodyText);
+                            this.diaryDataInit();
+                            this.ifDialog=false;
+                            this.getJsonp();
+                        })
+                        .catch(function(res){
+                            console.log(res);
+                            alert("出错了")
+                        });*/
+                },
+                getHitokoto: function () {
+                    this.$http.get('https://sslapi.hitokoto.cn/')
+                        .then(function (res) {
+                            this.hitokoto=res.data
+                        })
+                },
+                signIn:function () {
+                    this.$http.post("http://"+this.url+":3000/signIn",
+                        {id:this.id,password:this.password},
+                        {emulateJSON: true}
+                    )
+                        .then(function(res) {
+                            res=JSON.parse(res.bodyText);
+                            if(res.code==='1'){
+                            console.log(res.data);
+                            this.diaryDataInit();
+                            this.ifSignIn=false;
+                            this.ifLogin=true;
+                            this.getJsonp();
+                            localStorage.id=this.id;
+                            }else {
+                                alert(res.data);
+                                console.log(res.data);
+                                this.id='';
+                                this.password='';
+                            }
+                        })
+                        .catch(function(res){
+                            console.log(res);
+                            alert("出错了")
+                        });
+                },
+                signOut:function () {
+                    this.id='';
+                    this.password='';
+                    this.diaryData=[];
+                    this.ifLogin=false;
+                    this.ifShowLeft=false;
+                    localStorage.clear();
+                },
+                signUp:function () {
+                    this.$http.post("http://"+this.url+":3000/signUp",
+                        {id:this.id,password:this.password},
+                        {emulateJSON: true}
+                    )
+                        .then(function(res) {
+                            res=JSON.parse(res.bodyText);
+                            if(res.code==='1'){
+                                alert(res.data);
+                                this.diaryDataInit();
+                                this.ifSignUp=false;
+                                this.ifLogin=true;
+                                this.getJsonp();
+                            }else {
+                                alert(res.data);
+                                console.log(res.data);
+                                this.id='';
+                                this.password='';
+                            }
+                        })
+                        .catch(function(res){
+                            console.log(res);
+                            alert("出错了")
+                        });
+                }
+            },
+            mounted:function () {
+                if(localStorage.id){
+                    this.id=localStorage.id;
+                    this.ifLogin=true;
+                }
+
+                this.getJsonp();
+                this.getHitokoto();
+            }
+
+        })
+    </script>
+
+</body>
+
+
+
+</html>
