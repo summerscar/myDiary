@@ -264,19 +264,35 @@ li.active{
     font-size: 15px;
 }
 #main div#right div.content div.diaryContent div.diaryItemText{
-    padding: 4px 15px 0;
+    padding: 4px 7px 0;
+    margin-left: 8px;
     text-align: left;
     font-size: 14px;
 }
 #main div#right div.content div.diaryContent div.diaryItemBtn{
     text-align: right;
 }
+#main div#right div.content div.diaryContent div.rightContent{
+    padding-left: 40px;
+}
 #main div#right div.content div.diaryContent div.diaryItemTime{
     position: absolute;
-    bottom: -16px;
-    right: 8px;
+    top:50%;
+    left:0;
     font-size: 12px;
-    color: #80848f;
+    color: #ffffff;
+    transform: translateY(-60%);
+}
+#main div#right div.content div.diaryContent div.diaryItemTime div.day{
+    font-size: 40px;
+    padding: 6px 6px;
+    line-height: 100%;
+}
+#main div#right div.content div.diaryContent div.diaryItemTime div.month{
+    font-size: 14px;
+    padding: 0 10px;
+    text-align: left;
+     line-height: 100%;
 }
 #main div#right div.content div.diaryContent div.diaryItemBtn i{
     display: inline-block;

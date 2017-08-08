@@ -209,13 +209,21 @@
                                 <i class="iconfont icon-complete1" style="font-size: 85px;opacity: 0.9" @click="completeDiary(item._id,item.completed)"></i>
                             </div>
                             <div class="diaryItemTitle"><span style="font-weight: bold">{{item.title}}</span> <i class="iconfont icon-pin" v-if="item.top==='1'" style="position: absolute;right: 14px"></i></div>
-                            <div class="diaryItemText">{{item.content}}</div>
-                            <div class="diaryItemBtn">
-                                <i class="iconfont icon-complete" @click="completeDiary(item._id,item.completed)"></i>
-                                <i class="iconfont icon-edit" @click="editDiary(item)"></i>
-                                <i class="iconfont icon-delete" @click="ifDelDiary(item._id)"></i>
+                            <div>
+                                <div class="diaryItemTime">
+                                    <div class="day">{{item.time | getDay}}</div>
+                                    <div class="month">{{item.time | getMonth}}月</div>
+                                </div>
+                                <div class="rightContent">
+                                    <div class="diaryItemText">{{item.content}}</div>
+                                    <div class="diaryItemBtn">
+                                        <i class="iconfont icon-complete" @click="completeDiary(item._id,item.completed)"></i>
+                                        <i class="iconfont icon-edit" @click="editDiary(item)"></i>
+                                        <i class="iconfont icon-delete" @click="ifDelDiary(item._id)"></i>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="diaryItemTime">{{item.time}}</div>
+                           
                         </div>
                         <p v-if="!ifLogin&&!diaryData.length" style="padding: 20px">请先 <a @click="ifSignIn=true" style="font-weight: bold;color: #66ccff;">登录</a>
                             / <a @click="ifSignUp=true" style="font-weight: bold;color: #66ccff;">注册</a></p>
@@ -293,6 +301,20 @@
                             }
 
                 }  
+            },
+            filters:{
+                getDay:function(value) {
+                    return value.substring(8,10)
+                    //return 1
+                },
+                getMonth:function(value) {
+                    let month = value.substring(5,7)
+                    if(month.substring(0,1)==='0'){
+                        return month.substring(1,2);
+                    }
+                    return month
+                    //return 1
+                }
             },
             methods:{
                 ifDialogShow:function () {
